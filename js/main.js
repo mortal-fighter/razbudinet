@@ -174,95 +174,105 @@ function enablePlusMinusButtons() {
     document.getElementById("timer3").disabled = "",
     document.getElementById("timer4").disabled = ""
 }
+function playZeroSound(callback) {
+    console.log('play zero sound 1');
+    // Fix sound on mobile phones
+    // Solution from https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
+    var sound = new Audio('./sounds/zerosound.ogg');
+    $(sound).attr('muted', '');
+    $(sound).on('canplaythrough', function() { console.log('canPlayThrough'); this.play(); });
+    $(sound).on('ended', function() { console.log('ended'); callback(); });
+}
+function _enableSound() {
+    console.log('_enable sound 1');
+    myAudioEnabled || (0 == sound && ((myAudio = new Audio("sounds/horoz.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    1 == sound && ((myAudio = new Audio("sounds/alarm_clock_1.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    2 == sound && ((myAudio = new Audio("sounds/club1.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    4 == sound && ((myAudio = new Audio("sounds/club2.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    5 == sound && ((myAudio = new Audio("sounds/club3.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    6 == sound && ((myAudio = new Audio("sounds/minigun.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    7 == sound && ((myAudio = new Audio("sounds/nukleer.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    8 == sound && ((myAudio = new Audio("sounds/club4.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    9 == sound && ((myAudio = new Audio("sounds/club5.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    10 == sound && ((myAudio = new Audio("sounds/club6.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    11 == sound && ((myAudio = new Audio("sounds/club7.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    12 == sound && ((myAudio = new Audio("sounds/club8.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    13 == sound && ((myAudio = new Audio("sounds/club9.ogg")).addEventListener("ended", function() {
+        this.currentTime = 0,
+        this.play()
+    }, !1),
+    $("#smoothly").is(":checked") && setVolume(myAudio),
+    myAudio.play()),
+    myAudioEnabled = !0)
+}
 function enableSound() {
     if (!zeroSoundPlayed) {
-        
-        // Fix sound on mobile devices
-        playZeroSound(function() {
-
-            // Other sound logic
-            myAudioEnabled || (0 == sound && ((myAudio = new Audio("sounds/horoz.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            1 == sound && ((myAudio = new Audio("sounds/alarm_clock_1.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            2 == sound && ((myAudio = new Audio("sounds/club1.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            4 == sound && ((myAudio = new Audio("sounds/club2.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            5 == sound && ((myAudio = new Audio("sounds/club3.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            6 == sound && ((myAudio = new Audio("sounds/minigun.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            7 == sound && ((myAudio = new Audio("sounds/nukleer.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            8 == sound && ((myAudio = new Audio("sounds/club4.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            9 == sound && ((myAudio = new Audio("sounds/club5.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            10 == sound && ((myAudio = new Audio("sounds/club6.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            11 == sound && ((myAudio = new Audio("sounds/club7.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            12 == sound && ((myAudio = new Audio("sounds/club8.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            13 == sound && ((myAudio = new Audio("sounds/club9.ogg")).addEventListener("ended", function() {
-                this.currentTime = 0,
-                this.play()
-            }, !1),
-            $("#smoothly").is(":checked") && setVolume(myAudio),
-            myAudio.play()),
-            myAudioEnabled = !0)
-        });
-
+        console.log('enable sound 1');
+        playZeroSound(function() { _enableSound(); }); // Fix sound on mobile devices
         zeroSoundPlayed = true;
+    } else {
+        console.log('enable sound 2');
+        _enableSound();
     }
 }
 function setVolume(e) {
@@ -275,16 +285,6 @@ function setVolume(e) {
 function disableSound() {
     myAudioEnabled && (myAudio.pause(),
     myAudioEnabled = !1)
-}
-function playZeroSound(callback) {
-    // Fix sound on mobile phones
-    // Solution from https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
-    var sound = new Audio('./sounds/zerosound.ogg')
-    $(sound).attr('muted', '');
-    $(sound).on('canPlayThrough', function() {
-        this.play();
-        callback();
-    })
 }
 function eraseCountdownVars() {
     countHours1 = 0,
