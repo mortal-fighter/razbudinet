@@ -574,9 +574,7 @@ var sound = 0
   , countdownIntervalId = 0;
 $(function() {
     console.log('begin');
-    var sound = new Audio('./sounds/alarm_clock_1.ogg');
-    setTimeout(function() { console.log('sound playing'); sound.play(); }, 2000);
-    return;
+    
 
     $("#timer1").on("vclick", decreaseAlarmHours);
     $("#timer2").on("vclick", increaseAlarmHours);
@@ -601,6 +599,11 @@ $(function() {
     });
     $("#start_stop").click(function() {
         console.log('> #start_stop click');
-        startStopUyandım();
+        
+        var sound = new Audio('./sounds/alarm_clock_1.ogg');
+        setTimeout(function() { console.log('sound playing'); sound.play(); }, 2000);
+        return;
+
+        //startStopUyandım();
     });
 });
