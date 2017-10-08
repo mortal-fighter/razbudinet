@@ -573,6 +573,7 @@ var sound = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
 $(function() {
+    console.log('begin');
     var sound = new Audio('./sounds/alarm_clock_1.ogg');
     setTimeout(function() { console.log('sound playing'); sound.play(); }, 2000);
     return;
