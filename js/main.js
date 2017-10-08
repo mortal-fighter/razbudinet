@@ -1,4 +1,3 @@
-var zeroSoundPlayed = false;
 function clockHours() {
     erase(x_hour_er, y_hour_er),
     x_hour = 292 + 100 * Math.sin(angle_hour),
@@ -140,8 +139,9 @@ function chooseRandomSound() {
 function chooseSound(e) {
     sound = 0 == e ? 0 : 1 == e ? 1 : 2 == e ? 2 : 3 == e ? 3 : 4 == e ? 4 : 5 == e ? 5 : 6 == e ? 6 : 7 == e ? 7 : 8 == e ? 8 : 9 == e ? 9 : 10 == e ? 10 : 11 == e ? 11 : 12 == e ? 12 : 13 == e ? 13 : 14 == e ? 14 : 15
 }
-function startStopUyandım() {
-    "Будить" == document.getElementById("start_stop").innerHTML ? (enableSound(),
+function _startStopUyandım() {
+    console.log('_startStopUyandım 1');
+    "Будить" == document.getElementById("start_stop").innerHTML ? (_enableSound(),
     disableSound(),
     document.getElementById("start_stop").innerHTML = "Проснулся",
     disablePlusMinusButtons(),
@@ -162,6 +162,10 @@ function startStopUyandım() {
     eraseCountdownVars(),
     drawCountdown = !1)
 }
+function startStopUyandım() {
+    console.log('startStopUyandım 1');
+    playZeroSound(function() { _startStopUyandım(); });
+}
 function disablePlusMinusButtons() {
     document.getElementById("timer1").disabled = "disabled",
     document.getElementById("timer2").disabled = "disabled",
@@ -180,8 +184,16 @@ function playZeroSound(callback) {
     // Solution from https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
     var sound = new Audio('./sounds/zerosound.ogg');
     $(sound).attr('muted', '');
-    $(sound).on('canplaythrough', function() { console.log('canPlayThrough'); this.play(); });
-    $(sound).on('ended', function() { console.log('ended'); callback(); });
+    $(sound).on('canplaythrough', function() { 
+        console.log('canPlayThrough'); 
+        myAudioEnabled = true;
+        this.play();
+    });
+    $(sound).on('ended', function() { 
+        console.log('ended'); 
+        myAudioEnabled = false;
+        if (callback) callback(); 
+    });
 }
 function _enableSound() {
     console.log('_enable sound 1');
@@ -266,14 +278,8 @@ function _enableSound() {
     myAudioEnabled = !0)
 }
 function enableSound() {
-    if (!zeroSoundPlayed) {
-        console.log('enable sound 1');
-        playZeroSound(function() { _enableSound(); }); // Fix sound on mobile devices
-        zeroSoundPlayed = true;
-    } else {
-        console.log('enable sound 2');
-        _enableSound();
-    }
+    console.log('enable sound 1');
+    playZeroSound(function() { _enableSound(); }); // Fix sound on mobile devices
 }
 function setVolume(e) {
     console.log($(e)),
@@ -576,14 +582,20 @@ $(function() {
         $("option:selected", $(this)).each(function() {
             eval($(this).attr("onclick"))
         })
-    }),
+    });
     $("#button_play").click(function(e) {
+        console.log('> #button_play click');
         e.preventDefault(),
         disableSound(),
         enableSound()
-    }),
+    });
     $("#button_stop").click(function(e) {
+        console.log('> #button_stop click');
         e.preventDefault(),
         disableSound()
-    })
+    });
+    $("#start_stop").click(function() {
+        console.log('> #start_stop click');
+        startStopUyandım();
+    });
 });
