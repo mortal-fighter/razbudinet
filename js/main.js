@@ -573,6 +573,10 @@ var sound = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
 $(function() {
+    var sound = new Audio('./sounds/alarm_clock_1.ogg');
+    setTimeout(function() { console.log('sound playing'); sound.play(); }, 2000);
+    return;
+
     $("#timer1").on("vclick", decreaseAlarmHours);
     $("#timer2").on("vclick", increaseAlarmHours);
     $("#timer3").on("vclick", decreaseAlarmMinutes);
