@@ -604,8 +604,8 @@ $(function() {
         zero.play().then(function() {
             console.log('1');
         });
-        //var clock = new Audio('./sounds/alarm_clock_1.ogg');
-        //setTimeout(function() { console.log('clock playing'); clock.play(); }, 3000);
+        var clock = new Audio('./sounds/alarm_clock_1.ogg');
+        setTimeout(function() { console.log('clock playing'); clock.play(); }, 3000);
         return;
 
         //startStopUyandım();
