@@ -601,7 +601,7 @@ $(function() {
         console.log('> #start_stop click');
         
         var zero = new Audio('./sounds/zerosound.ogg');
-        $(zero).on('canplay', function() {
+        $(zero).on('canplaythrough', function() {
             console.log('canplaythrough fires');
             zero.play();
         });
