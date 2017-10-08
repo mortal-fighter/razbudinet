@@ -600,12 +600,18 @@ $(function() {
     $("#start_stop").click(function() {
         console.log('> #start_stop click');
         
-        var zero = new Audio('./sounds/zerosound.ogg');
-        zero.play().then(function() {
-            console.log('1');
+        var sound = new Audio('./sounds/zerosound.ogg');
+        sound.play().then(function() { 
+            console.log('zero played'); 
+
+            $(sound).attr('src', './sounds/alarm_clock_1.ogg');
+            setTimeout(function() {
+                sound.play();
+            }, 3000);
         });
-        var clock = new Audio('./sounds/alarm_clock_1.ogg');
-        setTimeout(function() { console.log('clock playing'); clock.play(); }, 3000);
+        
+        
+
         return;
 
         //startStopUyandım();
