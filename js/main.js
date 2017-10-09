@@ -558,14 +558,20 @@ $(function() {
         })
     });
     $("#button_play").click(function(e) {
+        e.preventDefault();
+
         var sound = new Audio('./sounds/zerosound.ogg');
         sound.play().then(function() {
             $(sound).attr('src', './sounds/club3.ogg');
-            sound.play();
+            sound.play().then(function() {
+                setTimeout(function() {
+                    sound.pause();
+                }, 3000)
+            });
         });
         console.log('> #button_play click');
-        /*e.preventDefault();
-        if (!isAudioInitialized) {
+        
+        /*if (!isAudioInitialized) {
             initAudio(function(err) {
                 if (err) {
                     console.error(err);
