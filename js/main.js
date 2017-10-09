@@ -580,8 +580,6 @@ $(function() {
         disableSound()
     });
     $("#start_stop").click(function() {
-        console.log('> #start_stop click');
-        
         var sound = new Audio('./sounds/zerosound.ogg');
         sound.play().then(function() {
             $(sound).attr('src', './sounds/alarm_clock_1.ogg');
@@ -589,6 +587,7 @@ $(function() {
         });
         return;
 
+        console.log('> #start_stop click');
         if (!isAudioInitialized) {
             initAudio(function() { 
                 if (err) {
