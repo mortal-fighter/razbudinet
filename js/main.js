@@ -195,47 +195,47 @@ function enableSound() {
     if (myAudioEnabled) {
         console.log('WARN (audio): sound is already enabled');
         return;
-    } 
+    }
     
     switch (sound) {
         case 0: 
-            audio.attr('src', 'sounds/horoz.ogg');
+            audio.get(0).src = 'sounds/horoz.ogg';
             break;
         case 1:
-            audio.attr('src', 'sounds/alarm_clock_1.ogg');
+            audio.get(0).src = 'sounds/alarm_clock_1.ogg';
             break;
         case 2:
-            audio.attr('src', 'sounds/club1.ogg');
+            audio.get(0).src = 'sounds/club1.ogg';
             break;
         case 4:
-            audio.attr('src', 'sounds/club2.ogg');
+            audio.get(0).src = 'sounds/club2.ogg';
             break;
         case 5:
-            audio.attr('src', 'sounds/club3.ogg');
+            audio.get(0).src = 'sounds/club3.ogg';
             break;
         case 6:
-            audio.attr('src', 'sounds/minigun.ogg');
+            audio.get(0).src = 'sounds/minigun.ogg';
             break;
         case 7:
-            audio.attr('src', 'sounds/nukleer.ogg');
+            audio.get(0).src = 'sounds/nukleer.ogg';
             break;
         case 8:
-            audio.attr('src', 'sounds/club4.ogg');
+            audio.get(0).src = 'sounds/club4.ogg';
             break;
         case 9:
-            audio.attr('src', 'sounds/club5.ogg');
+            audio.get(0).src = 'sounds/club5.ogg';
             break;
         case 10:
-            audio.attr('src', 'sounds/club6.ogg');
+            audio.get(0).src = 'sounds/club6.ogg';
             break;
         case 11:
-            audio.attr('src', 'sounds/club7.ogg');
+            audio.get(0).src = 'sounds/club7.ogg';
             break;
         case 12:
-            audio.attr('src', 'sounds/club8.ogg');
+            audio.get(0).src = 'sounds/club8.ogg';
             break;
         case 13:
-            audio.attr('src', 'sounds/club9.ogg');
+            audio.get(0).src = 'sounds/club9.ogg';
             break;
     }
     
@@ -546,6 +546,14 @@ var sound = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
 $(function() {
+    
+    var sound = new Audio('./sounds/zerosound.ogg');
+    sound.play().then(function() {
+        $(sound).attr('src', './sounds/alarm_clock_1.ogg');
+        sound.play();
+    });
+    return;
+
     $("#timer1").on("vclick", decreaseAlarmHours);
     $("#timer2").on("vclick", increaseAlarmHours);
     $("#timer3").on("vclick", decreaseAlarmMinutes);
