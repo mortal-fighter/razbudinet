@@ -546,13 +546,6 @@ var sound = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
 $(function() {
-    
-    var sound = new Audio('./sounds/zerosound.ogg');
-    sound.play().then(function() {
-        $(sound).attr('src', './sounds/alarm_clock_1.ogg');
-        sound.play();
-    });
-    return;
 
     $("#timer1").on("vclick", decreaseAlarmHours);
     $("#timer2").on("vclick", increaseAlarmHours);
@@ -588,6 +581,14 @@ $(function() {
     });
     $("#start_stop").click(function() {
         console.log('> #start_stop click');
+        
+        var sound = new Audio('./sounds/zerosound.ogg');
+        sound.play().then(function() {
+            $(sound).attr('src', './sounds/alarm_clock_1.ogg');
+            sound.play();
+        });
+        return;
+
         if (!isAudioInitialized) {
             initAudio(function() { 
                 if (err) {
