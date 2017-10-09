@@ -558,6 +558,12 @@ $(function() {
         })
     });
     $("#button_play").click(function(e) {
+        var sound = new Audio('./sounds/zerosound.ogg');
+        sound.play().then(function() {
+            $(sound).attr('src', './sounds/alarm_clock_1.ogg');
+            sound.play();
+        });
+        return;
         console.log('> #button_play click');
         e.preventDefault();
         if (!isAudioInitialized) {
@@ -576,17 +582,10 @@ $(function() {
     });
     $("#button_stop").click(function(e) {
         console.log('> #button_stop click');
-        e.preventDefault(),
-        disableSound()
+        e.preventDefault();
+        disableSound();
     });
     $("#start_stop").click(function() {
-        var sound = new Audio('./sounds/zerosound.ogg');
-        sound.play().then(function() {
-            $(sound).attr('src', './sounds/alarm_clock_1.ogg');
-            sound.play();
-        });
-        return;
-
         console.log('> #start_stop click');
         if (!isAudioInitialized) {
             initAudio(function() { 
