@@ -558,12 +558,12 @@ $(function() {
         })
     });
     $("#button_play").click(function(e) {
-        var sound = new Audio('./sounds/zerosound.ogg');
+        /*var sound = new Audio('./sounds/zerosound.ogg');
         sound.play().then(function() {
             $(sound).attr('src', './sounds/alarm_clock_1.ogg');
             sound.play();
         });
-        return;
+        return;*/
         console.log('> #button_play click');
         e.preventDefault();
         if (!isAudioInitialized) {
