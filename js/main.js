@@ -560,7 +560,7 @@ $(function() {
     $("#button_play").click(function(e) {
         var sound = new Audio('./sounds/zerosound.ogg');
         sound.play().then(function() {
-            $(sound).attr('src', './sounds/club_3.ogg');
+            $(sound).attr('src', './sounds/club3.ogg');
             sound.play();
         });
         return;
