@@ -563,9 +563,8 @@ $(function() {
             $(sound).attr('src', './sounds/club3.ogg');
             sound.play();
         });
-        return;
         console.log('> #button_play click');
-        e.preventDefault();
+        /*e.preventDefault();
         if (!isAudioInitialized) {
             initAudio(function(err) {
                 if (err) {
@@ -578,7 +577,7 @@ $(function() {
         } else {
             disableSound();
             enableSound();
-        }
+        }*/
     });
     $("#button_stop").click(function(e) {
         console.log('> #button_stop click');
