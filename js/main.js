@@ -175,109 +175,94 @@ function enablePlusMinusButtons() {
     document.getElementById("timer4").disabled = ""
 }
 function initAudio(callback) {
-    console.log('init audio 1');
     // Must do audio element initialization according to fix limitations on mobiles
     // Solution from https://ru.stackoverflow.com/questions/635035/%D0%9E%D1%88%D0%B8%D0%B1%D0%BA%D0%B0-play-can-only-be-initiated-by-a-user-gesture-%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-chrome
     //           and https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
-    var audio = new Audio('./sounds/zerosound.ogg');
-    $(audio).attr('muted', '');
-    audio.play().then(function() {
-        console.log('init audio 2');
+    audio = $(new Audio('./sounds/zerosound.ogg')).attr('muted', '');
+    
+    myAudioEnabled = true;
+
+    audio.get(0).play().then(function() {
+        audio.removeAttr('muted');
+        isAudioInitialized = true;
+        myAudioEnabled = false;
         callback();
+    }).catch(function(err){
+        callback(err);
     });
 }
 function enableSound() {
-    console.log('enable sound 1');
-    myAudioEnabled || (0 == sound && ($(audio).attr('src', 'sounds/horoz.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    1 == sound && ($(audio).attr('src', 'sounds/alarm_clock_1.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    2 == sound && ($(audio).attr('src', 'sounds/club1.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    4 == sound && ($(audio).attr('src', 'sounds/club2.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    5 == sound && ($(audio).attr('src', 'sounds/club3.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    6 == sound && ($(audio).attr('src', 'sounds/minigun.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    7 == sound && ($(audio).attr('src', 'sounds/nukleer.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    8 == sound && ($(audio).attr('src', 'sounds/club4.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    9 == sound && ($(audio).attr('src', 'sounds/club5.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    10 == sound && ($(audio).attr('src', 'sounds/club6.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    11 == sound && ($(audio).attr('src', 'sounds/club7.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    12 == sound && ($(audio).attr('src', 'sounds/club8.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    13 == sound && ($(audio).attr('src', 'sounds/club9.ogg').addEventListener("ended", function() {
-        this.currentTime = 0,
-        this.play()
-    }, !1),
-    $("#smoothly").is(":checked") && setVolume(audio),
-    audio.play()),
-    myAudioEnabled = !0)
+    if (myAudioEnabled) {
+        console.log('WARN (audio): sound is already enabled');
+        return;
+    } 
+    
+    switch (sound) {
+        case 0: 
+            audio.attr('src', 'sounds/horoz.ogg');
+            break;
+        case 1:
+            audio.attr('src', 'sounds/alarm_clock_1.ogg');
+            break;
+        case 2:
+            audio.attr('src', 'sounds/club1.ogg');
+            break;
+        case 4:
+            audio.attr('src', 'sounds/club2.ogg');
+            break;
+        case 5:
+            audio.attr('src', 'sounds/club3.ogg');
+            break;
+        case 6:
+            audio.attr('src', 'sounds/minigun.ogg');
+            break;
+        case 7:
+            audio.attr('src', 'sounds/nukleer.ogg');
+            break;
+        case 8:
+            audio.attr('src', 'sounds/club4.ogg');
+            break;
+        case 9:
+            audio.attr('src', 'sounds/club5.ogg');
+            break;
+        case 10:
+            audio.attr('src', 'sounds/club6.ogg');
+            break;
+        case 11:
+            audio.attr('src', 'sounds/club7.ogg');
+            break;
+        case 12:
+            audio.attr('src', 'sounds/club8.ogg');
+            break;
+        case 13:
+            audio.attr('src', 'sounds/club9.ogg');
+            break;
+    }
+    
+    audio.on('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    });
+
+    if ($("#smoothly").is(":checked")) {
+        setVolume(audio);
+    }
+    
+    audio.get(0).load();
+    audio.get(0).play();
 }
-function setVolume(e) {
-    console.log($(e)),
+function setVolume(audio) {
+    var e = audio.get(0);
     e.volume = .1;
     var t = setInterval(function() {
         e.volume < 1 ? e.volume = Math.round(100 * (e.volume + .1)) / 100 : clearInterval(t)
     }, 1e4)
 }
 function disableSound() {
-    myAudioEnabled && (audio.pause(),
-    myAudioEnabled = !1)
+    if (myAudioEnabled) {
+        audio.get(0).pause();
+        myAudioEnabled = false;
+    }
 }
 function eraseCountdownVars() {
     countHours1 = 0,
@@ -561,7 +546,6 @@ var sound = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
 $(function() {
-    console.log('begin');
     $("#timer1").on("vclick", decreaseAlarmHours);
     $("#timer2").on("vclick", increaseAlarmHours);
     $("#timer3").on("vclick", decreaseAlarmMinutes);
@@ -574,10 +558,13 @@ $(function() {
     });
     $("#button_play").click(function(e) {
         console.log('> #button_play click');
-        e.preventDefault(),
+        e.preventDefault();
         if (!isAudioInitialized) {
-            initAudio(function() {
-                isAudioInitialized = true;
+            initAudio(function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                } 
                 disableSound();
                 enableSound();        
             });
@@ -594,9 +581,12 @@ $(function() {
     $("#start_stop").click(function() {
         console.log('> #start_stop click');
         if (!isAudioInitialized) {
-            initAudio(function() {
-                isAudioInitialized = true;
-                startStopUyandım();       
+            initAudio(function() { 
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                startStopUyandım(); 
             });
         } else {
             startStopUyandım();
