@@ -140,7 +140,6 @@ function chooseSound(e) {
     sound = 0 == e ? 0 : 1 == e ? 1 : 2 == e ? 2 : 3 == e ? 3 : 4 == e ? 4 : 5 == e ? 5 : 6 == e ? 6 : 7 == e ? 7 : 8 == e ? 8 : 9 == e ? 9 : 10 == e ? 10 : 11 == e ? 11 : 12 == e ? 12 : 13 == e ? 13 : 14 == e ? 14 : 15
 }
 function startStopUyandım() {
-    console.log('startStopUyandım 1');
     "Будить" == document.getElementById("start_stop").innerHTML ? (enableSound(),
     disableSound(),
     document.getElementById("start_stop").innerHTML = "Проснулся",
@@ -245,6 +244,8 @@ function enableSound() {
     if ($("#smoothly").is(":checked")) {
         setVolume(audio);
     }
+
+    myAudioEnabled = true;
 
     audio.play();
 }
