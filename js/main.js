@@ -178,14 +178,12 @@ function initAudio(callback) {
     // Must do audio element initialization according to fix limitations on mobiles
     // Solution from https://ru.stackoverflow.com/questions/635035/%D0%9E%D1%88%D0%B8%D0%B1%D0%BA%D0%B0-play-can-only-be-initiated-by-a-user-gesture-%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-chrome
     //           and https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
-    audio = $(new Audio('./sounds/zerosound.ogg')).attr('muted', '');
+    audio = new Audio('./sounds/zerosound.ogg');
     
     myAudioEnabled = true;
 
-    audio.get(0).play().then(function() {
-        audio.removeAttr('muted');
+    audio.play().then(function() {
         isAudioInitialized = true;
-        myAudioEnabled = false;
         callback();
     }).catch(function(err){
         callback(err);
@@ -196,50 +194,50 @@ function enableSound() {
         console.log('WARN (audio): sound is already enabled');
         return;
     }
-    
+
     switch (sound) {
         case 0: 
-            audio.get(0).src = 'sounds/horoz.ogg';
+            $(audio).attr('src', './sounds/horoz.ogg');
             break;
         case 1:
-            audio.get(0).src = 'sounds/alarm_clock_1.ogg';
+            $(audio).attr('src', './sounds/alarm_clock_1.ogg');
             break;
         case 2:
-            audio.get(0).src = 'sounds/club1.ogg';
+            $(audio).attr('src', './sounds/club1.ogg');
             break;
         case 4:
-            audio.get(0).src = 'sounds/club2.ogg';
+            $(audio).attr('src', './sounds/club2.ogg');
             break;
         case 5:
-            audio.get(0).src = 'sounds/club3.ogg';
+            $(audio).attr('src', './sounds/club3.ogg');
             break;
         case 6:
-            audio.get(0).src = 'sounds/minigun.ogg';
+            $(audio).attr('src', './sounds/minigun.ogg');
             break;
         case 7:
-            audio.get(0).src = 'sounds/nukleer.ogg';
+            $(audio).attr('src', './sounds/nukleer.ogg');
             break;
         case 8:
-            audio.get(0).src = 'sounds/club4.ogg';
+            $(audio).attr('src', './sounds/club4.ogg');
             break;
         case 9:
-            audio.get(0).src = 'sounds/club5.ogg';
+            $(audio).attr('src', './sounds/club5.ogg');
             break;
         case 10:
-            audio.get(0).src = 'sounds/club6.ogg';
+            $(audio).attr('src', './sounds/club6.ogg');
             break;
         case 11:
-            audio.get(0).src = 'sounds/club7.ogg';
+            $(audio).attr('src', './sounds/club7.ogg');
             break;
         case 12:
-            audio.get(0).src = 'sounds/club8.ogg';
+            $(audio).attr('src', './sounds/club8.ogg');
             break;
         case 13:
-            audio.get(0).src = 'sounds/club9.ogg';
+            $(audio).attr('src', './sounds/club9.ogg');
             break;
     }
     
-    audio.on('ended', function() {
+    $(audio).on('ended', function() {
         this.currentTime = 0;
         this.play();
     });
@@ -247,12 +245,10 @@ function enableSound() {
     if ($("#smoothly").is(":checked")) {
         setVolume(audio);
     }
-    
-    audio.get(0).load();
-    audio.get(0).play();
+
+    audio.play();
 }
-function setVolume(audio) {
-    var e = audio.get(0);
+function setVolume(e) {
     e.volume = .1;
     var t = setInterval(function() {
         e.volume < 1 ? e.volume = Math.round(100 * (e.volume + .1)) / 100 : clearInterval(t)
@@ -260,7 +256,7 @@ function setVolume(audio) {
 }
 function disableSound() {
     if (myAudioEnabled) {
-        audio.get(0).pause();
+        audio.pause();
         myAudioEnabled = false;
     }
 }
@@ -545,6 +541,7 @@ var sound = 0
   , countSeconds1 = 0
   , countSeconds2 = 0
   , countdownIntervalId = 0;
+
 $(function() {
 
     $("#timer1").on("vclick", decreaseAlarmHours);
@@ -558,32 +555,21 @@ $(function() {
         })
     });
     $("#button_play").click(function(e) {
-        e.preventDefault();
-
-        var sound = new Audio('./sounds/zerosound.ogg');
-        sound.play().then(function() {
-            $(sound).attr('src', './sounds/club3.ogg');
-            sound.play().then(function() {
-                setTimeout(function() {
-                    sound.pause();
-                }, 3000)
-            });
-        });
         console.log('> #button_play click');
-        
-        /*if (!isAudioInitialized) {
+        e.preventDefault();
+        if (!isAudioInitialized) {
             initAudio(function(err) {
                 if (err) {
                     console.error(err);
                     return;
                 } 
                 disableSound();
-                enableSound();        
+                enableSound();
             });
         } else {
             disableSound();
             enableSound();
-        }*/
+        }
     });
     $("#button_stop").click(function(e) {
         console.log('> #button_stop click');
@@ -593,7 +579,7 @@ $(function() {
     $("#start_stop").click(function() {
         console.log('> #start_stop click');
         if (!isAudioInitialized) {
-            initAudio(function() { 
+            initAudio(function(err) { 
                 if (err) {
                     console.error(err);
                     return;
