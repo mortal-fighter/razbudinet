@@ -124,17 +124,13 @@ function decreaseAlarmMinutes() {
     alarmMinutes2 = 9),
     drawAlarm()
 }
-function checkRandom(e) {
-    "Random" == e && chooseRandomSound()
-}
 function chooseRandomSound() {
     var e = [];
     $.each($("#select option"), function() {
         "Random" != $(this).val() && e.push($(this).attr("onClick").match(/\(([^)]+)\)/)[1])
     });
     var t = e[Math.floor(Math.random() * e.length)];
-    chooseSound(1 * t),
-    console.log(t)
+    chooseSound(1 * t)
 }
 function chooseSound(e) {
     sound = 0 == e ? 0 : 1 == e ? 1 : 2 == e ? 2 : 3 == e ? 3 : 4 == e ? 4 : 5 == e ? 5 : 6 == e ? 6 : 7 == e ? 7 : 8 == e ? 8 : 9 == e ? 9 : 10 == e ? 10 : 11 == e ? 11 : 12 == e ? 12 : 13 == e ? 13 : 14 == e ? 14 : 15
@@ -158,7 +154,6 @@ function chooseAudiofileCrossbrowserly(number) {
         audioformat = 'aac';
     }
 
-    console.log('melody= ' + melodies[audioformat][number]);
     return melodies[audioformat][number];
 }
 function startStopUyandım() {
@@ -206,7 +201,6 @@ function initAudio(callback) {
     var play = audio.play();
 
     if (play && play.then) {
-        console.log('play.then exists');
         play.then(function() {
             isAudioInitialized = true;
             callback();
@@ -214,7 +208,6 @@ function initAudio(callback) {
             callback(err);
         });
     } else {
-        console.log('play.then doesnt exists');
         $(audio).on('ended', function() {
             isAudioInitialized = true;
             callback();
@@ -225,6 +218,10 @@ function enableSound() {
     if (myAudioEnabled) {
         console.log('WARN (audio): sound is already enabled');
         return;
+    }
+
+    if ($('#select option:selected').val() === 'Random') {
+        chooseRandomSound();
     }
 
     $(audio).attr('src', chooseAudiofileCrossbrowserly(sound));
@@ -537,7 +534,7 @@ var sound = 0
   , countdownIntervalId = 0
   , parserBrowser = null;
 
-const melodies = {
+var melodies = {
     mp3: [
         './sounds/horoz.mp3',
         './sounds/alarm_clock_1.mp3',
@@ -601,7 +598,6 @@ $(function() {
         })
     });
     $("#button_play").click(function(e) {
-        console.log('> #button_play click');
         e.preventDefault();
         if (!isAudioInitialized) {
             initAudio(function(err) {
@@ -618,12 +614,10 @@ $(function() {
         }
     });
     $("#button_stop").click(function(e) {
-        console.log('> #button_stop click');
         e.preventDefault();
         disableSound();
     });
     $("#start_stop").click(function() {
-        console.log('> #start_stop click');
         if (!isAudioInitialized) {
             initAudio(function(err) { 
                 if (err) {
@@ -638,6 +632,4 @@ $(function() {
     });
 
     parserBrowser = new UAParser();
-    console.log('browser=' + parserBrowser.getBrowser().name, ', os=' + parserBrowser.getOS().name);
-    alert('browser=' + parserBrowser.getBrowser().name, ', os=' + parserBrowser.getOS().name);
 });
