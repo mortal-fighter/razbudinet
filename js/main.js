@@ -154,6 +154,10 @@ function chooseAudiofileCrossbrowserly(number) {
         audioformat = 'mp3';
     }
 
+    if (browser === 'Safari' || browser === 'Mobile Safari') {
+        audioformat = 'aac';
+    }
+
     console.log('melody= ' + melodies[audioformat][number]);
     return melodies[audioformat][number];
 }
@@ -565,6 +569,22 @@ const melodies = {
         './sounds/club7.ogg',
         './sounds/club8.ogg',
         './sounds/club9.ogg'
+    ],
+    aac: [
+        './sounds/horoz.aac',
+        './sounds/alarm_clock_1.aac',
+        './sounds/club1.aac',
+        './sounds/zerosound.aac',
+        './sounds/club2.aac',
+        './sounds/club3.aac',
+        './sounds/minigun.aac',
+        './sounds/nukleer.aac',
+        './sounds/club4.aac',
+        './sounds/club5.aac',
+        './sounds/club6.aac',
+        './sounds/club7.aac',
+        './sounds/club8.aac',
+        './sounds/club9.aac'
     ]
 };
 
