@@ -146,7 +146,9 @@ function chooseAudiofileCrossbrowserly(number) {
     
     if (
         browser === 'Edge' ||
-        browser === 'IE'
+        browser === 'IE' ||
+        (browser === 'Firefox' && os === 'Android') ||
+        browser === 'Android Browser'
         ) 
     {
         audioformat = 'mp3';
@@ -617,4 +619,5 @@ $(function() {
 
     parserBrowser = new UAParser();
     console.log('browser=' + parserBrowser.getBrowser().name, ', os=' + parserBrowser.getOS().name);
+    alert('browser=' + parserBrowser.getBrowser().name, ', os=' + parserBrowser.getOS().name);
 });
