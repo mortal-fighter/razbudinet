@@ -139,6 +139,22 @@ function chooseRandomSound() {
 function chooseSound(e) {
     sound = 0 == e ? 0 : 1 == e ? 1 : 2 == e ? 2 : 3 == e ? 3 : 4 == e ? 4 : 5 == e ? 5 : 6 == e ? 6 : 7 == e ? 7 : 8 == e ? 8 : 9 == e ? 9 : 10 == e ? 10 : 11 == e ? 11 : 12 == e ? 12 : 13 == e ? 13 : 14 == e ? 14 : 15
 }
+function chooseAudiofileCrossbrowserly(number) {
+    var browser = parserBrowser.getBrowser().name;
+    var os = parserBrowser.getOS().name;
+    var audioformat = 'ogg';
+    
+    if (
+        browser === 'Edge' ||
+        browser === 'IE'
+        ) 
+    {
+        audioformat = 'mp3';
+    }
+
+    console.log('melody= ' + melodies[audioformat][number]);
+    return melodies[audioformat][number];
+}
 function startStopUyandım() {
     "Будить" == document.getElementById("start_stop").innerHTML ? (enableSound(),
     disableSound(),
@@ -177,16 +193,27 @@ function initAudio(callback) {
     // Must do audio element initialization according to fix limitations on mobiles
     // Solution from https://ru.stackoverflow.com/questions/635035/%D0%9E%D1%88%D0%B8%D0%B1%D0%BA%D0%B0-play-can-only-be-initiated-by-a-user-gesture-%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-chrome
     //           and https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
-    audio = new Audio('./sounds/zerosound.ogg');
+    audio = new Audio(chooseAudiofileCrossbrowserly(3));
     
     myAudioEnabled = true;
+    
+    var play = audio.play();
 
-    audio.play().then(function() {
-        isAudioInitialized = true;
-        callback();
-    }).catch(function(err){
-        callback(err);
-    });
+    if (play && play.then) {
+        console.log('play.then exists');
+        play.then(function() {
+            isAudioInitialized = true;
+            callback();
+        }).catch(function(err){
+            callback(err);
+        });
+    } else {
+        console.log('play.then doesnt exists');
+        $(audio).on('ended', function() {
+            isAudioInitialized = true;
+            callback();
+        })
+    }
 }
 function enableSound() {
     if (myAudioEnabled) {
@@ -194,47 +221,7 @@ function enableSound() {
         return;
     }
 
-    switch (sound) {
-        case 0: 
-            $(audio).attr('src', './sounds/horoz.ogg');
-            break;
-        case 1:
-            $(audio).attr('src', './sounds/alarm_clock_1.ogg');
-            break;
-        case 2:
-            $(audio).attr('src', './sounds/club1.ogg');
-            break;
-        case 4:
-            $(audio).attr('src', './sounds/club2.ogg');
-            break;
-        case 5:
-            $(audio).attr('src', './sounds/club3.ogg');
-            break;
-        case 6:
-            $(audio).attr('src', './sounds/minigun.ogg');
-            break;
-        case 7:
-            $(audio).attr('src', './sounds/nukleer.ogg');
-            break;
-        case 8:
-            $(audio).attr('src', './sounds/club4.ogg');
-            break;
-        case 9:
-            $(audio).attr('src', './sounds/club5.ogg');
-            break;
-        case 10:
-            $(audio).attr('src', './sounds/club6.ogg');
-            break;
-        case 11:
-            $(audio).attr('src', './sounds/club7.ogg');
-            break;
-        case 12:
-            $(audio).attr('src', './sounds/club8.ogg');
-            break;
-        case 13:
-            $(audio).attr('src', './sounds/club9.ogg');
-            break;
-    }
+    $(audio).attr('src', chooseAudiofileCrossbrowserly(sound));
     
     $(audio).on('ended', function() {
         this.currentTime = 0;
@@ -541,7 +528,43 @@ var sound = 0
   , countMinutes2 = 0
   , countSeconds1 = 0
   , countSeconds2 = 0
-  , countdownIntervalId = 0;
+  , countdownIntervalId = 0
+  , parserBrowser = null;
+
+const melodies = {
+    mp3: [
+        './sounds/horoz.mp3',
+        './sounds/alarm_clock_1.mp3',
+        './sounds/club1.mp3',
+        './sounds/zerosound.mp3',
+        './sounds/club2.mp3',
+        './sounds/club3.mp3',
+        './sounds/minigun.mp3',
+        './sounds/nukleer.mp3',
+        './sounds/club4.mp3',
+        './sounds/club5.mp3',
+        './sounds/club6.mp3',
+        './sounds/club7.mp3',
+        './sounds/club8.mp3',
+        './sounds/club9.mp3'
+    ],
+    ogg: [
+        './sounds/horoz.ogg',
+        './sounds/alarm_clock_1.ogg',
+        './sounds/club1.ogg',
+        './sounds/zerosound.ogg',
+        './sounds/club2.ogg',
+        './sounds/club3.ogg',
+        './sounds/minigun.ogg',
+        './sounds/nukleer.ogg',
+        './sounds/club4.ogg',
+        './sounds/club5.ogg',
+        './sounds/club6.ogg',
+        './sounds/club7.ogg',
+        './sounds/club8.ogg',
+        './sounds/club9.ogg'
+    ]
+};
 
 $(function() {
 
@@ -591,4 +614,7 @@ $(function() {
             startStopUyandım();
         }        
     });
+
+    parserBrowser = new UAParser();
+    console.log('browser=' + parserBrowser.getBrowser().name, ', os=' + parserBrowser.getOS().name);
 });
