@@ -29,6 +29,7 @@ var x_sec = 0
   , timerctx = null
   , countcanvs = null
   , countctx = null
+  , countFillStyle = "black"
 
   , current_Time = null
   , currenthours = null
@@ -39,15 +40,7 @@ var x_sec = 0
   , alarmHours2 = 0
   , alarmMinutes1 = 0
   , alarmMinutes2 = 0
-
-  , isClockRun = false
-  , isCountdownRun = false
-
-  , sound = 0
-  , audio = null
-  , isAudioInitialized = false
-  , drawCountdown = !1
-  , myAudioEnabled = !1
+  
   , countHours1 = 0
   , countHours2 = 0
   , countMinutes1 = 0
@@ -57,9 +50,15 @@ var x_sec = 0
   , countdownIntervalId = 0
   , parserUserAgent = null
 
-  , countFillStyle = "black"
-  , countFlag = 0
+  , isAudioInitialized = false
+  , myAudioEnabled = false
+  , snoozeFlag = false
+  , isClockRun = false
+  , isCountdownRun = false
+  , countdownState = 'DEACTIVATED' /* DEACTIVATED, RUNNING, FINISH */
 
+  , sound = 0
+  , audio = null
   , melodies = {
         mp3: [
             './sounds/horoz.mp3',
@@ -338,37 +337,36 @@ function decreaseAlarmMinutes() {
 /*************/
 /* COUNTDOWN */
 /************/
-function drawRemaining(flag) {
-    if (drawCountdown) {
-        
-        countcanvas = document.getElementById("countcanvas");
-        countctx = countcanvas.getContext("2d");
-        countctx.fillStyle = "black",
-        countctx.strokeStyle = "black",
-        countctx.strokeRect(0, 0, 305, 60),
-        countctx.fillRect(0, 0, 305, 60),
-        countctx.fillStyle = "white",
-        countctx.strokeStyle = "white",
-        countctx.strokeRect(5, 5, 295, 50),
-        countctx.fillRect(5, 5, 295, 50);
-        
-        setCountdownVariables(flag);
-        
-        countctx.beginPath(),
-        countctx.fillStyle = countFillStyle,
-        countctx.font = "bold 48px Tahoma, tahoma",
-        countctx.fillText(countHours1, 17, 48, 200),
-        countctx.fillText(countHours2, 52, 48, 200),
-        countctx.fillText(":", 92, 43, 200),
-        countctx.fillText(countMinutes1, 122, 48, 200),
-        countctx.fillText(countMinutes2, 157, 48, 200),
-        countctx.fillText(":", 197, 43, 200),
-        countctx.fillText(countSeconds1, 227, 48, 200),
-        countctx.fillText(countSeconds2, 262, 48, 200),
-        countctx.closePath(),
+function drawCountdownIndicator(isSnooze) {
+    countcanvas = document.getElementById("countcanvas");
+    countctx = countcanvas.getContext("2d");
+    countctx.fillStyle = "black",
+    countctx.strokeStyle = "black",
+    countctx.strokeRect(0, 0, 305, 60),
+    countctx.fillRect(0, 0, 305, 60),
+    countctx.fillStyle = "white",
+    countctx.strokeStyle = "white",
+    countctx.strokeRect(5, 5, 295, 50),
+    countctx.fillRect(5, 5, 295, 50);
+    
+    setCountdownVariables(isSnooze);
+    
+    countctx.beginPath(),
+    countctx.fillStyle = countFillStyle,
+    countctx.font = "bold 48px Tahoma, tahoma",
+    countctx.fillText(countHours1, 17, 48, 200),
+    countctx.fillText(countHours2, 52, 48, 200),
+    countctx.fillText(":", 92, 43, 200),
+    countctx.fillText(countMinutes1, 122, 48, 200),
+    countctx.fillText(countMinutes2, 157, 48, 200),
+    countctx.fillText(":", 197, 43, 200),
+    countctx.fillText(countSeconds1, 227, 48, 200),
+    countctx.fillText(countSeconds2, 262, 48, 200),
+    countctx.closePath(),
 
-        isCountdownRun = true;
-    }
+    countFillStyle = 'black';
+
+    isCountdownRun = true;
 }
 function eraseCountdownVars() {
     countHours1 = 0,
@@ -378,7 +376,7 @@ function eraseCountdownVars() {
     countSeconds1 = 0,
     countSeconds2 = 0
 }
-function setCountdownVariables(flag) {
+function setCountdownVariables(isSnooze) {
     var diffHours = -1
       , diffMin= -1
       , diffSec = -1
@@ -386,7 +384,7 @@ function setCountdownVariables(flag) {
       , sameHour = false
       , sameMinute = false;
 
-    if (flag) {
+    if (isSnooze) {
         countSeconds1 = "0";
         countSeconds2 = "0";
         countMinutes1 = "1";
@@ -431,13 +429,24 @@ function stepCountdown() {
     countMinutes1 = 5,
     countMinutes2 = 9,
     countSeconds1 = 5,
-    countSeconds2 = 9),
+    countSeconds2 = 9);
     
-    0 == countHours1 && 0 == countHours2 && 0 == countMinutes1 && 0 == countMinutes2 && 0 == countSeconds1 && 0 == countSeconds2 && (countFillStyle = "black" == countFillStyle ? "red" : "black",
-    0 == countFlag && (enableSnooze(),
-    enableSound(),
-    document.getElementById("start_stop").innerHTML = "Проснулся",
-    countFlag = 1)),
+    if (countdownState === 'FINISH') {
+        countFillStyle = (countFillStyle === "black") ? "red" : "black";
+    }
+
+    if (0 == countHours1 && 0 == countHours2 && 
+        0 == countMinutes1 && 0 == countMinutes2 && 
+        0 == countSeconds1 && 0 == countSeconds2 &&
+        countdownState !== 'FINISH')
+    {
+        countdownState = 'FINISH';
+        enableSnooze();
+        enableSound();
+        document.getElementById("start_stop").innerHTML = "Проснулся";
+        countFillStyle = "red";
+    }
+
     countctx.fillStyle = "black",
     countctx.strokeStyle = "black",
     countctx.strokeRect(0, 0, 305, 60),
@@ -511,19 +520,18 @@ function chooseAudiofileCrossbrowserly(number) {
 
     return melodies[audioformat][number];
 }
-function startStopUyandım() {
-    if (document.getElementById("start_stop").innerHTML === "Будить") {
-        enableSound();
-        disableSound();
+function countdownOnOff() {
+    if (countdownState === 'DEACTIVATED') {
+        countdownState = 'RUNNING';
         document.getElementById("start_stop").innerHTML = "Проснулся";
         disablePlusMinusButtons();
         $("#button_stop").stop().fadeOut(500);
         $("#button_play").stop().fadeOut(500);
         document.getElementById("select").disabled = "disabled";
         document.getElementById("remaining").innerHTML = "<div class='last1'><p class='time_rem'>Осталось спать:</p></div><div class='height'><canvas align='center' width='307' height='70' id='countcanvas'>корректно работает в Firefox и Chrome</canvas></div>";
-        drawCountdown = true;
-        drawRemaining(false);
-    } else {
+        drawCountdownIndicator(false);
+    } else if (countdownState === 'RUNNING' || countdownState === 'FINISH') {
+        countdownState = 'DEACTIVATED';
         $("#button_stop").stop().fadeIn(500);
         $("#button_play").stop().fadeIn(500);
         document.getElementById("start_stop").innerHTML = "Будить";
@@ -534,7 +542,10 @@ function startStopUyandım() {
         document.getElementById("select").disabled = "";
         isCountdownRun = false;
         eraseCountdownVars();
-        drawCountdown = false;
+        countFillStyle = "black";
+    } else {
+        console.log('WARN: wrong countdown state \'' + countdownState + '\'!');
+        return;
     }
 }
 function disablePlusMinusButtons() {
@@ -561,6 +572,7 @@ function initAudio(callback) {
 
     if (play && play.then) {
         play.then(function() {
+            disableSound();
             isAudioInitialized = true;
             callback();
         }).catch(function(err){
@@ -595,7 +607,6 @@ function enableSound() {
     }
 
     myAudioEnabled = true;
-
     audio.play();
 }
 function setVolume(e) {
@@ -614,13 +625,18 @@ function enableSnooze() {
     document.getElementById("snooze").disabled = ""
 }
 function disableSnooze() {
-    document.getElementById("snooze").disabled = "disabled";
+    if (countdownState !== 'FINISH') {
+        console.log('WARN: Wrong countdown state \'' + countdownState + '\'');
+        return;
+    }
+    countdownState = 'RUNNING';
     disableSound();
     document.getElementById("start_stop").innerHTML = "Проснулся";
+    document.getElementById("snooze").disabled = "disabled";
     isCountdownRun = false;
     eraseCountdownVars();
-    drawCountdown = true;
-    drawRemaining(true);
+    countFillStyle = "black";
+    drawCountdownIndicator(true);
     recreateRemainingTime();
 }
 function checkRefresh() {
@@ -685,7 +701,6 @@ function initControls() {
                     console.error(err);
                     return;
                 } 
-                disableSound();
                 enableSound();
             });
         } else {
@@ -711,10 +726,10 @@ function initControls() {
                     console.error(err);
                     return;
                 }
-                startStopUyandım(); 
+                countdownOnOff(); 
             });
         } else {
-            startStopUyandım();
+            countdownOnOff();
         }        
     });
 }
