@@ -49,7 +49,6 @@ var x_sec = 0
   , countSeconds2 = 0
   , generalIntervalId = 0
   , countdownIntervalId = 0
-  , syncClocksIntervalId = 0
   , parserUserAgent = null
 
   , isAudioInitialized = false
@@ -131,15 +130,14 @@ function initTime() {
             stepClock();
         }
 
-        if (isCountdownRun) {
+        if (countdownState === 'RUNNING') {
+            calculateCountdownVariables();
+        }
+        if (countdownState === 'RUNNING' || countdownState === 'FINISH') {
             stepCountdown();
         }
-    }, 1000);   
-
-    // Fix time difference on mobiles 
-    syncClocksIntervalId = setInterval(function() {
         
-    }, 5000);
+    }, 1000);   
 }
 function initClock() {
     mycanvas = document.getElementById("clockcanvas")
@@ -178,11 +176,11 @@ function initClock() {
 
     $("#saat").tzineClock();
 
-    angle_hour = (currenthours % 12 * 10 + Math.floor(currentminutes / 6)) * (Math.PI / 60),
-    angle_min = currentminutes * Math.PI / 30,
-    angle_sec = currentseconds * Math.PI / 30,
-    min_interval = 59 - currentseconds,
-    hour_interval = 359 - currentminutes % 6 * 60 - currentseconds,
+    angle_hour = (currenthours % 12 * 10 + Math.floor(currentminutes / 6)) * (Math.PI / 60);
+    angle_min = currentminutes * Math.PI / 30;
+    angle_sec = currentseconds * Math.PI / 30;
+    min_interval = 59 - currentseconds;
+    hour_interval = 359 - currentminutes % 6 * 60 - currentseconds;
     
     clockHours();
     clockMinutes();
@@ -276,7 +274,6 @@ function drawSeconds(e, t) {
     ctx.stroke(),
     ctx.closePath()
 }
-function 
 
 /*********/
 /* ALARM */
@@ -340,6 +337,23 @@ function decreaseAlarmMinutes() {
     alarmMinutes2 = 9),
     drawAlarm()
 }
+function recreateRemainingTime() {
+    eraseAlarm();
+    var date = new Date
+      , min = date.getMinutes()
+      , hours = date.getHours();
+    alarmHours1 = Math.floor(hours / 10),
+    alarmHours2 = hours % 10,
+    alarmMinutes1 = Math.floor(min / 10),
+    alarmMinutes2 = min % 10,
+    
+    (alarmMinutes1 += 1) >= 6 && (alarmMinutes1 = 0,
+    10 == (alarmHours2 += 1) && (alarmHours2 = 0,
+    alarmHours1 += 1),
+    2 == alarmHours1 && 4 == alarmHours2 && (alarmHours1 = 0,
+    alarmHours2 = 0)),
+    drawAlarm()
+}
 
 /*************/
 /* COUNTDOWN */
@@ -356,7 +370,11 @@ function drawCountdownIndicator(isSnooze) {
     countctx.strokeRect(5, 5, 295, 50),
     countctx.fillRect(5, 5, 295, 50);
     
-    setCountdownVariables(isSnooze);
+    if (isSnooze) {
+        setCountdownVariablesIfSnooze();
+    } else {
+        calculateCountdownVariables();
+    }
     
     countctx.beginPath(),
     countctx.fillStyle = countFillStyle,
@@ -374,77 +392,82 @@ function drawCountdownIndicator(isSnooze) {
     countFillStyle = 'black';
 
     isCountdownRun = true;
+    countdownState = 'RUNNING';
 }
 function eraseCountdownVars() {
-    countHours1 = 0,
-    countHours2 = 0,
-    countMinutes1 = 0,
-    countMinutes2 = 0,
-    countSeconds1 = 0,
-    countSeconds2 = 0
+    countHours1 = 0;
+    countHours2 = 0;
+    countMinutes1 = 0;
+    countMinutes2 = 0;
+    countSeconds1 = 0;
+    countSeconds2 = 0;
 }
-function setCountdownVariables(isSnooze) {
+function setCountdownVariablesIfSnooze() {
+    countSeconds1 = 0;
+    countSeconds2 = 0;
+    countMinutes1 = 1;
+    countMinutes2 = 0;
+    countHours1 = 0;
+    countHours2 = 0;
+}
+function calculateCountdownVariables() {
     var diffHours = -1
       , diffMin= -1
       , diffSec = -1
-      , nextHour = false
-      , sameHour = false
-      , sameMinute = false;
+      , decreaseHour = false
+      , decreaseMinute = false;
 
-    if (isSnooze) {
-        countSeconds1 = "0";
-        countSeconds2 = "0";
-        countMinutes1 = "1";
-        countMinutes2 = "0";
-        countHours1 = "0";
-        countHours2 = "0";
-    } else {
-        dh = (alarmHours1 == "0") ? parseInt(alarmHours2) - currenthours : parseInt(alarmHours1 + "" + alarmHours2) - currenthours;
-        dm = (alarmMinutes1 == "0") ? parseInt(alarmMinutes2) - currentminutes : parseInt(alarmMinutes1 + "" + alarmMinutes2) - currentminutes;
-        ds = 60 - currentseconds;
-        
-        if (dm < 0) {
-            dm += 60;
-            nextHour = true;
-        } else if (dm == 0) {
-            sameMinute = true;
-        }
-        
-        dh < 0 ? dh = 24 + dh : 0 == dh && (sameHour = true),
-        (nextHour || sameMinute) && (sameHour ? dh = 23 : dh--),
-
-        60 == ds ? ds = 0 : 0 != dm ? dm-- : 0 != ds && (dm= 59),
-        dm += "",
-        dh += "",
-        1 == (ds += "").length ? countSeconds2 = ds : (countSeconds1 = ds.charAt(0),
-        countSeconds2 = ds.charAt(1)),
-        1 == dm.length ? countMinutes2 = dm: (countMinutes1 = dm.charAt(0),
-        countMinutes2 = dm.charAt(1)),
-        1 == dh.length ? countHours2 = dh : (countHours1 = dh.charAt(0),
-        countHours2 = dh.charAt(1))
+    dh = (alarmHours1 == "0") ? parseInt(alarmHours2) - currenthours : parseInt(alarmHours1 + "" + alarmHours2) - currenthours;
+    dm = (alarmMinutes1 == "0") ? parseInt(alarmMinutes2) - currentminutes : parseInt(alarmMinutes1 + "" + alarmMinutes2) - currentminutes;
+    ds = 60 - currentseconds;
+    
+    if (dh < 0) {
+        dh += 24;
     }
+
+    if (dm < 0) {
+        dm += 60;
+        decreaseHour = true;   
+    }
+
+    if (ds === 60) {
+        ds = 0;
+    } else if (ds > 0) {
+        decreaseMinute = true;
+    } 
+
+    if (decreaseMinute) {
+        if (dm === 0) {
+            dm = 59;
+            decreaseHour = true;
+        } else {
+            dm--;
+        }
+    }
+
+    if (decreaseHour) {
+        if (dh === 0) {
+            dh = 23;
+        } else {
+            dh--;
+        }
+    }
+
+    countSeconds1 = Math.floor(ds / 10);
+    countSeconds2 = ds % 10;
+    countMinutes1 = Math.floor(dm / 10);
+    countMinutes2 = dm % 10;
+    countHours1 = Math.floor(dh / 10);
+    countHours2 = dh % 10;
 }
 function stepCountdown() {
-    0 != countSeconds1 || 0 != countSeconds2 ? countSeconds2 > 0 ? countSeconds2-- : (countSeconds1--,
-    countSeconds2 = 9) : 0 != countMinutes1 || 0 != countMinutes2 ? (countMinutes2 > 0 ? countMinutes2-- : (countMinutes1--,
-    countMinutes2 = 9),
-    countSeconds1 = 5,
-    countSeconds2 = 9) : 0 == countHours1 && 0 == countHours2 || (countHours2 > 0 ? countHours2-- : (countHours1--,
-    countHours2 = 9),
-    countMinutes2 > 0 ? countMinutes2-- : (countMinutes1--,
-    countMinutes2 = 9),
-    countMinutes1 = 5,
-    countMinutes2 = 9,
-    countSeconds1 = 5,
-    countSeconds2 = 9);
-    
     if (countdownState === 'FINISH') {
         countFillStyle = (countFillStyle === "black") ? "red" : "black";
     }
 
-    if (0 == countHours1 && 0 == countHours2 && 
-        0 == countMinutes1 && 0 == countMinutes2 && 
-        0 == countSeconds1 && 0 == countSeconds2 &&
+    if (0 === countHours1 && 0 === countHours2 && 
+        0 === countMinutes1 && 0 === countMinutes2 && 
+        0 === countSeconds1 && 0 === countSeconds2 &&
         countdownState !== 'FINISH')
     {
         countdownState = 'FINISH';
@@ -475,22 +498,7 @@ function stepCountdown() {
     countctx.fillText(countSeconds2, 262, 48, 200),
     countctx.closePath()
 }
-function recreateRemainingTime() {
-    eraseAlarm();
-    var date = new Date
-      , min = date.getMinutes()
-      , hours = date.getHours();
-    alarmHours1 = Math.floor(hours / 10),
-    alarmHours2 = hours % 10,
-    alarmMinutes1 = Math.floor(min / 10),
-    alarmMinutes2 = min % 10,
-    (alarmMinutes1 += 1) >= 6 && (alarmMinutes1 = 0,
-    10 == (alarmHours2 += 1) && (alarmHours2 = 0,
-    alarmHours1 += 1),
-    2 == alarmHours1 && 4 == alarmHours2 && (alarmHours1 = 0,
-    alarmHours2 = 0)),
-    drawAlarm()
-}
+
 
 /*********/
 /* SOUND */
@@ -643,8 +651,8 @@ function disableSnooze() {
     isCountdownRun = false;
     eraseCountdownVars();
     countFillStyle = "black";
-    drawCountdownIndicator(true);
     recreateRemainingTime();
+    drawCountdownIndicator(true);
 }
 function checkRefresh() {
     document.getElementById("snooze").disabled = "disabled",
