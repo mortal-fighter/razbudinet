@@ -47,7 +47,9 @@ var x_sec = 0
   , countMinutes2 = 0
   , countSeconds1 = 0
   , countSeconds2 = 0
+  , generalIntervalId = 0
   , countdownIntervalId = 0
+  , syncClocksIntervalId = 0
   , parserUserAgent = null
 
   , isAudioInitialized = false
@@ -119,7 +121,7 @@ function initTime() {
     currentminutes = current_Time.getMinutes();
     currentseconds = current_Time.getSeconds();
 
-    setInterval(function() {
+    generalIntervalId = setInterval(function() {
         current_Time = new Date;
         currenthours = current_Time.getHours();
         currentminutes = current_Time.getMinutes();
@@ -132,7 +134,12 @@ function initTime() {
         if (isCountdownRun) {
             stepCountdown();
         }
-    }, 1000);    
+    }, 1000);   
+
+    // Fix time difference on mobiles 
+    syncClocksIntervalId = setInterval(function() {
+        
+    }, 5000);
 }
 function initClock() {
     mycanvas = document.getElementById("clockcanvas")
@@ -269,7 +276,7 @@ function drawSeconds(e, t) {
     ctx.stroke(),
     ctx.closePath()
 }
-
+function 
 
 /*********/
 /* ALARM */
