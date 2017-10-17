@@ -622,6 +622,7 @@ function initAudio(callback) {
         });
     } else {
         $(audio).on('ended', function() {
+            disableSound();
             isAudioInitialized = true;
             callback();
         })
