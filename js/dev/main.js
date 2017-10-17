@@ -36,6 +36,12 @@ var x_sec = 0
   , currentminutes = null
   , currentseconds = null
 
+  /* moment in time when alarm was started */
+  , currentTime0 = null
+  , currenthours0 = null
+  , currentminutes0 = null
+  , currentseconds0 = null
+
   , alarmHours1 = 0
   , alarmHours2 = 0
   , alarmMinutes1 = 0
@@ -47,6 +53,7 @@ var x_sec = 0
   , countMinutes2 = 0
   , countSeconds1 = 0
   , countSeconds2 = 0
+  
   , generalIntervalId = 0
   , countdownIntervalId = 0
   , parserUserAgent = null
@@ -57,6 +64,7 @@ var x_sec = 0
   , isClockRun = false
   , isCountdownRun = false
   , countdownState = 'DEACTIVATED' /* DEACTIVATED, RUNNING, FINISH */
+  , triggerAlarmThisDayFlag = false
 
   , sound = 0
   , audio = null
@@ -131,6 +139,12 @@ function initTime() {
         }
 
         if (countdownState === 'RUNNING') {
+            if (!triggerAlarmThisDayFlag && timeBiggerThan(currenthours0, currentminutes0, currentseconds0,
+                               currenthours, currentminutes, currentseconds)) 
+            {
+                triggerAlarmThisDayFlag = true;
+            }
+
             calculateCountdownVariables();
         }
         if (countdownState === 'RUNNING' || countdownState === 'FINISH') {
@@ -375,6 +389,17 @@ function drawCountdownIndicator(isSnooze) {
     } else {
         calculateCountdownVariables();
     }
+
+    currentTime0 = new Date();
+    currenthours0 = currentTime0.getHours();
+    currentminutes0 = currentTime0.getMinutes();
+    currentseconds0 = currentTime0.getSeconds();
+
+    var alarmHours = alarmHours1 + ''; alarmHours = parseInt(alarmHours + alarmHours2);
+    var alarmMinutes = alarmMinutes1 + ''; alarmMinutes = parseInt(alarmMinutes + alarmMinutes2);
+    if (timeBiggerThan(alarmHours, alarmMinutes, 0, currenthours, currentminutes, currentseconds)) {
+        triggerAlarmThisDayFlag = true;
+    }
     
     countctx.beginPath(),
     countctx.fillStyle = countFillStyle,
@@ -411,9 +436,9 @@ function setCountdownVariablesIfSnooze() {
     countHours2 = 0;
 }
 function calculateCountdownVariables() {
-    var diffHours = -1
-      , diffMin= -1
-      , diffSec = -1
+    var dh = -1
+      , dm = -1
+      , ds = -1
       , decreaseHour = false
       , decreaseMinute = false;
 
@@ -465,12 +490,14 @@ function stepCountdown() {
         countFillStyle = (countFillStyle === "black") ? "red" : "black";
     }
 
-    if (0 === countHours1 && 0 === countHours2 && 
-        0 === countMinutes1 && 0 === countMinutes2 && 
-        0 === countSeconds1 && 0 === countSeconds2 &&
-        countdownState !== 'FINISH')
+    var alarmHours = alarmHours1 + ''; alarmHours = parseInt(alarmHours + alarmHours2);
+    var alarmMinutes = alarmMinutes1 + ''; alarmMinutes = parseInt(alarmMinutes + alarmMinutes2);
+
+    if (countdownState !== 'FINISH' && triggerAlarmThisDayFlag 
+        && timeBiggerThan(currenthours, currentminutes, currentseconds, alarmHours, alarmMinutes, 0)) 
     {
         countdownState = 'FINISH';
+        eraseCountdownVars();
         enableSnooze();
         enableSound();
         document.getElementById("start_stop").innerHTML = "Проснулся";
@@ -747,6 +774,27 @@ function initControls() {
             countdownOnOff();
         }        
     });
+}
+
+/* HELPERS */
+function timeBiggerThan(hours1, minutes1, seconds1, hours2, minutes2, seconds2) {
+    if (hours1 > hours2) {
+        return true;
+    } else if (hours1 < hours2) {
+        return false;
+    } else {
+        if (minutes1 > minutes2) {
+            return true;
+        } else if (minutes1 < minutes2) {
+            return false;
+        } else {
+            if (seconds1 > seconds2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 }
 
 /* BEGIN */
