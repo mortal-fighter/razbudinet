@@ -139,8 +139,10 @@ function initTime() {
         }
 
         if (countdownState === 'RUNNING') {
-            if (!triggerAlarmThisDayFlag && timeBiggerThan(currenthours0, currentminutes0, currentseconds0,
-                               currenthours, currentminutes, currentseconds)) 
+            
+            // current time-zero > current time means that the time have just passed midnight, so we should set thiggerAlarmThisDayFlag to true
+            if (timeBiggerThan(currenthours0, currentminutes0, currentseconds0,
+                               currenthours, currentminutes, currentseconds) && !triggerAlarmThisDayFlag) 
             {
                 triggerAlarmThisDayFlag = true;
             }
@@ -426,6 +428,11 @@ function eraseCountdownVars() {
     countMinutes2 = 0;
     countSeconds1 = 0;
     countSeconds2 = 0;
+
+    currenthours0 = 0;
+    currentminutes0 = 0;
+    currentseconds0 = 0;
+    triggerAlarmThisDayFlag = false;
 }
 function setCountdownVariablesIfSnooze() {
     countSeconds1 = 0;
