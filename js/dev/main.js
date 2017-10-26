@@ -562,6 +562,9 @@ function chooseAudiofileCrossbrowserly(number) {
 
     return melodies[audioformat][number];
 }
+function preloadMelody() {
+
+}
 function countdownOnOff() {
     if (countdownState === 'DEACTIVATED') {
         countdownState = 'RUNNING';
@@ -572,6 +575,7 @@ function countdownOnOff() {
         document.getElementById("select").disabled = "disabled";
         document.getElementById("remaining").innerHTML = "<div class='last1'><p class='time_rem'>Осталось спать:</p></div><div class='height'><canvas align='center' width='307' height='70' id='countcanvas'>корректно работает в Firefox и Chrome</canvas></div>";
         drawCountdownIndicator(false);
+        preloadMelody();
     } else if (countdownState === 'RUNNING' || countdownState === 'FINISH') {
         countdownState = 'DEACTIVATED';
         $("#button_stop").stop().fadeIn(500);
@@ -591,16 +595,16 @@ function countdownOnOff() {
     }
 }
 function disablePlusMinusButtons() {
-    document.getElementById("timer1").disabled = "disabled",
-    document.getElementById("timer2").disabled = "disabled",
-    document.getElementById("timer3").disabled = "disabled",
-    document.getElementById("timer4").disabled = "disabled"
+    $("#timer1").prop('disabled', true);
+    $("#timer2").prop('disabled', true);
+    $("#timer3").prop('disabled', true);
+    $("#timer4").prop('disabled', true);
 }
 function enablePlusMinusButtons() {
-    document.getElementById("timer1").disabled = "",
-    document.getElementById("timer2").disabled = "",
-    document.getElementById("timer3").disabled = "",
-    document.getElementById("timer4").disabled = ""
+    $("timer1").prop('disabled' false);
+    $("timer2").prop('disabled' false);
+    $("timer3").prop('disabled' false);
+    $("timer4").prop('disabled' false);
 }
 function initAudio(callback) {
     // Must ddiffSec audio element initialization according to fix limitations on mobiles
@@ -773,7 +777,7 @@ function initControls() {
             });
         } else {
             countdownOnOff();
-        }        
+        }
     });
 }
 
