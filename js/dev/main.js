@@ -493,9 +493,12 @@ function stepCountdown() {
     var alarmHours = alarmHours1 + ''; alarmHours = parseInt(alarmHours + alarmHours2);
     var alarmMinutes = alarmMinutes1 + ''; alarmMinutes = parseInt(alarmMinutes + alarmMinutes2);
 
+    console.log('countdownState=', countdownState, ', triggerAlarmThisDayFlag=', triggerAlarmThisDayFlag,
+        ', timebigger=', timeBiggerThan(currenthours, currentminutes, currentseconds, alarmHours, alarmMinutes, 0));
     if (countdownState !== 'FINISH' && triggerAlarmThisDayFlag 
         && timeBiggerThan(currenthours, currentminutes, currentseconds, alarmHours, alarmMinutes, 0)) 
     {
+        console.log('trigger alarm');
         countdownState = 'FINISH';
         eraseCountdownVars();
         enableSnooze();
@@ -601,10 +604,10 @@ function disablePlusMinusButtons() {
     $("#timer4").prop('disabled', true);
 }
 function enablePlusMinusButtons() {
-    $("timer1").prop('disabled', false);
-    $("timer2").prop('disabled', false);
-    $("timer3").prop('disabled', false);
-    $("timer4").prop('disabled', false);
+    $("#timer1").prop('disabled', false);
+    $("#timer2").prop('disabled', false);
+    $("#timer3").prop('disabled', false);
+    $("#timer4").prop('disabled', false);
 }
 function initAudio(callback) {
     // Must ddiffSec audio element initialization according to fix limitations on mobiles
