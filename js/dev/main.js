@@ -601,10 +601,10 @@ function disablePlusMinusButtons() {
     $("#timer4").prop('disabled', true);
 }
 function enablePlusMinusButtons() {
-    $("timer1").prop('disabled' false);
-    $("timer2").prop('disabled' false);
-    $("timer3").prop('disabled' false);
-    $("timer4").prop('disabled' false);
+    $("timer1").prop('disabled', false);
+    $("timer2").prop('disabled', false);
+    $("timer3").prop('disabled', false);
+    $("timer4").prop('disabled', false);
 }
 function initAudio(callback) {
     // Must ddiffSec audio element initialization according to fix limitations on mobiles
