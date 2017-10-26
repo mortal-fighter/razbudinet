@@ -59,7 +59,9 @@ var x_sec = 0
   , parserUserAgent = null
 
   , isAudioInitialized = false
-  , myAudioEnabled = false
+  , isAudioLoaded = false
+  , isAudioEnabled = false
+  
   , snoozeFlag = false
   , isClockRun = false
   , isCountdownRun = false
@@ -373,7 +375,7 @@ function recreateRemainingTime() {
 
 /*************/
 /* COUNTDOWN */
-/************/
+/*************/
 function drawCountdownIndicator(isSnooze) {
     countcanvas = document.getElementById("countcanvas");
     countctx = countcanvas.getContext("2d");
@@ -540,15 +542,15 @@ function stepCountdown() {
 /*********/
 /* SOUND */
 /*********/
-function chooseRandomSound() {
+function chooseRandomSoundNumber() {
     var e = [];
     $.each($("#select option"), function() {
         "Random" != $(this).val() && e.push($(this).attr("onClick").match(/\(([^)]+)\)/)[1])
     });
     var t = e[Math.floor(Math.random() * e.length)];
-    chooseSound(1 * t)
+    chooseSoundNumber(1 * t)
 }
-function chooseSound(e) {
+function chooseSoundNumber(e) {
     sound = 0 == e ? 0 : 1 == e ? 1 : 2 == e ? 2 : 3 == e ? 3 : 4 == e ? 4 : 5 == e ? 5 : 6 == e ? 6 : 7 == e ? 7 : 8 == e ? 8 : 9 == e ? 9 : 10 == e ? 10 : 11 == e ? 11 : 12 == e ? 12 : 13 == e ? 13 : 14 == e ? 14 : 15
 }
 function chooseAudiofileCrossbrowserly(number) {
@@ -572,8 +574,24 @@ function chooseAudiofileCrossbrowserly(number) {
 
     return melodies[audioformat][number];
 }
-function preloadMelody() {
+function loadAudio() {
+    if (isAudioLoaded) {
+        console.log('WARN: Melody is already loading or loaded');
+        return;
+    }
 
+    if ($('#select option:selected').val() === 'Random') {
+        chooseRandomSoundNumber();
+    }
+
+    $(audio).attr('src', chooseAudiofileCrossbrowserly(sound));
+    
+    $(audio).on('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    });
+
+    isAudioLoaded = true;
 }
 function countdownOnOff() {
     if (countdownState === 'DEACTIVATED') {
@@ -585,7 +603,7 @@ function countdownOnOff() {
         document.getElementById("select").disabled = "disabled";
         document.getElementById("remaining").innerHTML = "<div class='last1'><p class='time_rem'>Осталось спать:</p></div><div class='height'><canvas align='center' width='307' height='70' id='countcanvas'>корректно работает в Firefox и Chrome</canvas></div>";
         drawCountdownIndicator(false);
-        preloadMelody();
+        loadAudio();
     } else if (countdownState === 'RUNNING' || countdownState === 'FINISH') {
         countdownState = 'DEACTIVATED';
         $("#button_stop").stop().fadeIn(500);
@@ -617,12 +635,17 @@ function enablePlusMinusButtons() {
     $("#timer4").prop('disabled', false);
 }
 function initAudio(callback) {
-    // Must ddiffSec audio element initialization according to fix limitations on mobiles
+    if (isAudioInitialized) {
+        console.log('WARN (sound): sound is already initialized!');
+        return;
+    }
+
+    // Must play zero sound audio according to fix mobile Chrome limitations
     // Solution from https://ru.stackoverflow.com/questions/635035/%D0%9E%D1%88%D0%B8%D0%B1%D0%BA%D0%B0-play-can-only-be-initiated-by-a-user-gesture-%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-chrome
     //           and https://stackoverflow.com/questions/32424775/failed-to-execute-play-on-htmlmediaelement-api-can-only-be-initiated-by-a-u
     audio = new Audio(chooseAudiofileCrossbrowserly(3));
     
-    myAudioEnabled = true;
+    isAudioEnabled = true;
     
     var play = audio.play();
 
@@ -643,27 +666,18 @@ function initAudio(callback) {
     }
 }
 function enableSound() {
-    if (myAudioEnabled) {
+    if (isAudioEnabled) {
         console.log('WARN (audio): sound is already enabled');
         return;
     }
 
-    if ($('#select option:selected').val() === 'Random') {
-        chooseRandomSound();
-    }
-
-    $(audio).attr('src', chooseAudiofileCrossbrowserly(sound));
-    
-    $(audio).on('ended', function() {
-        this.currentTime = 0;
-        this.play();
-    });
+    if (!isAudioLoaded) { loadAudio() }
 
     if ($("#smoothly").is(":checked")) {
         setVolume(audio);
     }
 
-    myAudioEnabled = true;
+    isAudioEnabled = true;
     audio.play();
 }
 function setVolume(e) {
@@ -673,9 +687,10 @@ function setVolume(e) {
     }, 1e4)
 }
 function disableSound() {
-    if (myAudioEnabled) {
+    if (isAudioEnabled) {
         audio.pause();
-        myAudioEnabled = false;
+        isAudioEnabled = false;
+        isAudioLoaded = false;
     }
 }
 function enableSnooze() {
@@ -700,7 +715,7 @@ function checkRefresh() {
     document.getElementById("snooze").disabled = "disabled",
     disableSound(),
     enablePlusMinusButtons(),
-    document.getElementById("select_td").innerHTML = "<select align='bottom' id='select' width='250' class='sound'><option value='Horoz' onclick='chooseSound(0);'>Петух</option><option value='Normal' onclick='chooseSound(1);'>Будильник</option><option value='Siren' onclick='chooseSound(3);'>Сирена 1</option><option value='nukleer' onclick='chooseSound(7);'>Сирена 2</option><option value='silah' onclick='chooseSound(6);'>Стрельба</option><option value='Club1' onclick='chooseSound(2);'>Клуб 1</option><option value='Club2' onclick='chooseSound(4);'>Клуб 2</option><option value='Club3' onclick='chooseSound(5);'>Клуб 3</option></select>"
+    document.getElementById("select_td").innerHTML = "<select align='bottom' id='select' width='250' class='sound'><option value='Horoz' onclick='chooseSoundNumber(0);'>Петух</option><option value='Normal' onclick='chooseSoundNumber(1);'>Будильник</option><option value='Siren' onclick='chooseSoundNumber(3);'>Сирена 1</option><option value='nukleer' onclick='chooseSoundNumber(7);'>Сирена 2</option><option value='silah' onclick='chooseSoundNumber(6);'>Стрельба</option><option value='Club1' onclick='chooseSoundNumber(2);'>Клуб 1</option><option value='Club2' onclick='chooseSoundNumber(4);'>Клуб 2</option><option value='Club3' onclick='chooseSoundNumber(5);'>Клуб 3</option></select>"
 }
 
 /* CONTROLS */
